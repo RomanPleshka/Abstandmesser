@@ -73,7 +73,6 @@ def __sendPage(socket, filePath):
     except Exception as e:
         print(e)
 
-
 def err(socket, code, message):
     """Respong error meesage to client
     """
