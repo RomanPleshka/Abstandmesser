@@ -1,0 +1,54 @@
+body {
+    background-color: #f4f4f9;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #333333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+ }
+ 
+h1 {
+     color: #2a3d66;
+     font-size: 2.5em;
+ }
+ 
+p {
+    color: #555555;
+    font-size: 1.2em;
+ }
+ 
+.download_files,
+.review_files {
+     display: flex;
+     flex-direction: column;
+     gap: 15px;
+     margin-top: 20px;
+ }
+.download_files a,
+.review_files a {
+     text-decoration: none;
+     color: white;
+     padding: 12px 25px;
+     border-radius: 8px;
+     text-align: center;
+     font-size: 1.1em;
+     transition: background-color 0.3s, transform 0.2s;
+ }
+ 
+.download_files a {background-color: #4CAF50; }
+.review_files a {background-color: #53abf3}
+ 
+.download_files a:hover {background-color: #45a049; transform: scale(1.05);}
+.review_files a:hover {background-color: #507bbd; transform: scale(1.05);}
+ 
+.download_files a:active, .review_files a:active {transform: scale(1);}
+ 
+.files-container {
+     display: flex;
+     flex-direction: row;
+     gap: 20px;
+}
