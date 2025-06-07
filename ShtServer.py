@@ -11,7 +11,7 @@ import time
 #ssid = "POCO"
 #password ="123456789"
 ssid = "Jaron"
-password = "112345678"
+password = "12345678"
 
 wifiConnect(ssid, password)
 
