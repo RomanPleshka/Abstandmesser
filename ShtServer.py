@@ -5,15 +5,17 @@ import machine
 import json
 from hcsr04_reading import returnDistance
 import time
+from jinja2 import Environment, FileSystemLoader
 
 # ssid = "gsog-iot"
 # password = "IOT_Projekt_BFK-S_2022"
-#ssid = "POCO"
-#password ="123456789"
+# ssid = "POCO"
+# password ="123456789"
 ssid = "Jaron"
 password = "12345678"
 
 wifiConnect(ssid, password)
+
 
 def handleRoot(socket, _):
     """
@@ -29,37 +31,18 @@ def handleRoot(socket, _):
         distance = returnDistance()
         data = writeJson(distance)
         writeXML(data)
-        page = """
-            <!DOCTYPE HTML>
-            <html>
-            <head>
-             <link rel="icon" href="favicon.ico" />
-             <title>Abstandmesser</title>
-             <link rel="stylesheet" href="style.css">
-             <meta http-equiv="refresh" content="5">
-            </head>
-            <body>
-              <h1>Hallo Wemos D1 mini</h1>
-              <p>Distance: {0} cm;</p>
-              <div class="files-container">
-                  <div class="review_files">
-                      <a target="_blank" href="#">Review HTML</a>
-                      <a target="_blank" href="distance.json">Review JSON</a>
-                      <a target="_blank" href="distance.xml">Review XML</a>
-                  </div>
-                  <div class="download_files">
-                      <a href="#" download>Download HTML</a>
-                      <a href="distance.json" download>Download JSON</a>
-                      <a href="distance.xml" download>Download XML</a>
-                  </div>
-              </div>
-            </body>
-            </html>
-            """.format(round(distance, 2))
+        file_loader = FileSystemLoader("index")
+        venv = Environment(loader=file_loader)
+        template = venv.get_template("Abstandmesser\\template.tpl")
+        output1 = template.render(distance=distance, data=data)
+        output1.format(round(distance, 2))
         server.ok(socket, "200", "text/html", page)
+        with open("index.html", "w", encoding="utf-8") as f:
+            f.write(output1)
     except Exception as e:
         server.err(socket, "500", "Internal Server Error")
         print("Exception in handleRoot:", e)
+
 
 def writeJson(distance):
     """
@@ -80,12 +63,14 @@ def writeJson(distance):
                 data = json.load(f)
         except:
             data = []
-            
-        timestamp = "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(*time.localtime()[:6])
+
+        timestamp = "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(
+            *time.localtime()[:6]
+        )
         data.append({"distance": round(distance, 2), "time": timestamp})
-        
+
         data = data[-10:]
-        
+
         with open("distance.json", "w") as f:
             f.write("[\n")
             for i, entry in enumerate(data):
@@ -97,12 +82,13 @@ def writeJson(distance):
                     f.write(",")
                 f.write("\n")
             f.write("]\n")
-            
+
             return data
-        
+
     except Exception as e:
         print("Error writing JSON:", e)
-                
+
+
 def writeXML(data):
     """
     Schreibt die aktuelle Distanz in eine XML-Datei und speichert die letzten 10 Einträge.
@@ -125,13 +111,15 @@ def writeXML(data):
     except Exception as e:
         print("Error writing XML:", e)
 
+
 def handleOnNotFound(socket):
     server.err(socket, "404", "File Not Found")
+
 
 server.onNotFound(handleOnNotFound)
 server.onPath("/", handleRoot)
 
-server.begin()  
+server.begin()
 
 try:
     while True:
