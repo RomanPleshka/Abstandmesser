@@ -34,8 +34,6 @@ def handleRoot(socket, _):
 
         with open("template.tpl", "r") as f:
             template = f.read()
-        for key, value in distance.items():
-            template = template.replace("{{ " + data + " }}", distance)
 
         html = template("template.tpl", {"distance": distance, "data": data})
         f.write(html)
