@@ -78,7 +78,7 @@ def write_data(distance, format="json"):
                     )
                     data.append({"distance": d, "time": t})
     except:
-        pass
+        print(f"ERROR {format}couldn´t be created")
 
     # Zeitstempel erzeugen
     timestamp = "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(
