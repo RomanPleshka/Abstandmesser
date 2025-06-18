@@ -38,7 +38,7 @@ def handleRoot(socket, _):
             template = template.replace("{{ " + key + " }}", value)
 
         html = template("template.tpl", {"distance": distance, "data": data})
-
+        f.write(html)
         print(html)
 
         server.ok(socket, "200", "text/html", page)
