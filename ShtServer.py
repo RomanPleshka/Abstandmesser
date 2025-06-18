@@ -47,6 +47,11 @@ def handleRoot(socket, _):
 
 
 def write_data(distance, format="json"):
+    """Die Funktion write_data(distance, format) speichert einen gemessenen Abstand zusammen mit einem Zeitstempel entweder
+    als JSON- oder XML-Datei. Sie prüft zunächst, ob bereits eine Datei mit dem gewünschten Format existiert, lädt deren Inhalt
+    und fügt den neuen Messwert hinzu. Um Speicher zu sparen, werden nur die letzten zehn Einträge behalten. Anschließend wird
+    die aktualisierte Liste wieder in die Datei geschrieben entweder im JSON-Format für einfache Datenverarbeitung
+    oder im XML-Format für strukturierte Anwendungen."""
     filename = "distance." + format
     data = []
 
