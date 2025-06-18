@@ -29,8 +29,8 @@ def handleRoot(socket, _):
     """
     try:
         distance = returnDistance()
-        data = writeJson(distance)
-        writeXML(data)
+        data = write_data(distance)
+        write_data(distance, "xml")
 
         with open("template.tpl", "r") as f:
             template = f.read()
@@ -46,72 +46,56 @@ def handleRoot(socket, _):
         print("Exception in handleRoot:", e)
 
 
-def writeJson(distance):
-    """
-    Schreibt die aktuelle Distanz in eine JSON-Datei und speichert die letzten 10 Einträge.
+def write_data(distance, format="json"):
+    filename = "distance." + format
+    data = []
 
-    Falls bereits eine JSON-Datei existiert, wird sie geladen und aktualisiert.
-    Die Daten enthalten Zeitstempel und werden formatiert gespeichert.
-
-    Args:
-        distance (float): Der gemessene Abstand in Zentimetern.
-
-    Returns:
-        list: Die aktualisierte Liste der Messdaten.
-    """
+    # Vorhandene Datei laden (wenn vorhanden)
     try:
-        try:
-            with open("distance.json", "r") as f:
+        with open(filename, "r") as f:
+            if format == "json":
                 data = json.load(f)
-        except:
-            data = []
+            elif format == "xml":
+                # einfache XML-Zeilenweise-Auswertung
+                lines = f.readlines()
+                for i in range(1, len(lines) - 1, 5):
+                    d = float(
+                        lines[i + 1]
+                        .strip()
+                        .replace("<distance>", "")
+                        .replace("</distance>", "")
+                    )
+                    t = (
+                        lines[i + 2]
+                        .strip()
+                        .replace("<time>", "")
+                        .replace("</time>", "")
+                    )
+                    data.append({"distance": d, "time": t})
+    except:
+        pass
 
-        timestamp = "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(
-            *time.localtime()[:6]
-        )
-        data.append({"distance": round(distance, 2), "time": timestamp})
+    # Zeitstempel erzeugen
+    timestamp = "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(
+        *time.localtime()[:6]
+    )
+    data.append({"distance": round(distance, 2), "time": timestamp})
+    data = data[-10:]  # nur die letzten 10 Einträge behalten
 
-        data = data[-10:]
-
-        with open("distance.json", "w") as f:
-            f.write("[\n")
-            for i, entry in enumerate(data):
-                f.write("    {\n")
-                f.write('        "distance": {:.2f},\n'.format(entry["distance"]))
-                f.write('        "time": "{}"\n'.format(entry["time"]))
-                f.write("    }")
-                if i < len(data) - 1:
-                    f.write(",")
-                f.write("\n")
-            f.write("]\n")
-
-            return data
-
-    except Exception as e:
-        print("Error writing JSON:", e)
-
-
-def writeXML(data):
-    """
-    Schreibt die aktuelle Distanz in eine XML-Datei und speichert die letzten 10 Einträge.
-
-    Falls bereits eine XML-Datei existiert, wird sie geladen und aktualisiert.
-    Die Daten enthalten Zeitstempel und werden formatiert gespeichert.
-
-    Args:
-        data (list): Eine Liste von Dictionaries mit den Feldern "distance" (float) und "time" (str).
-    """
-    try:
-        with open("distance.xml", "w") as f:
-            f.write("<distances>\n")
+    # Datei schreiben
+    with open(filename, "w") as f:
+        if format == "json":
+            json.dump(data, f)
+        elif format == "xml":
+            f.write("<data>\n")
             for entry in data:
                 f.write("  <entry>\n")
                 f.write("    <distance>{:.2f}</distance>\n".format(entry["distance"]))
                 f.write("    <time>{}</time>\n".format(entry["time"]))
                 f.write("  </entry>\n")
-            f.write("</distances>\n")
-    except Exception as e:
-        print("Error writing XML:", e)
+            f.write("</data>\n")
+
+    return data
 
 
 def handleOnNotFound(socket):
