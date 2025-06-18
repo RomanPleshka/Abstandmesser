@@ -5,7 +5,7 @@ import machine
 import json
 from hcsr04_reading import returnDistance
 import time
-from jinja2 import Environment, FileSystemLoader
+
 
 # ssid = "gsog-iot"
 # password = "IOT_Projekt_BFK-S_2022"
@@ -31,14 +31,18 @@ def handleRoot(socket, _):
         distance = returnDistance()
         data = writeJson(distance)
         writeXML(data)
-        file_loader = FileSystemLoader("index")
-        venv = Environment(loader=file_loader)
-        template = venv.get_template("Abstandmesser\\template.tpl")
-        output1 = template.render(distance=distance, data=data)
-        output1.format(round(distance, 2))
+
+        with open("template.tpl", "r") as f:
+            template = f.read()
+        for key, value in distance.items():
+            template = template.replace("{{ " + key + " }}", value)
+
+        html = template("template.tpl", {"distance": distance, "data": data})
+
+        print(html)
+
         server.ok(socket, "200", "text/html", page)
-        with open("index.html", "w", encoding="utf-8") as f:
-            f.write(output1)
+
     except Exception as e:
         server.err(socket, "500", "Internal Server Error")
         print("Exception in handleRoot:", e)
