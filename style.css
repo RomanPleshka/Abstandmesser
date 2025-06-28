@@ -8,7 +8,23 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  height: 200vh;
+}
+
+table {
+  width: 350px;
+  margin-top: 20px;
+  border-collapse: collapse;
+  border: 2px solid black;
+}
+th,
+td {
+  border: 2px solid black;
+  padding: 10px;
+  text-align: left;
+}
+th {
+  background-color: #f2f2f2;
 }
 
 h1 {
