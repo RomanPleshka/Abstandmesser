@@ -6,12 +6,8 @@ import json
 from hcsr04_reading import returnDistance
 import time
 
-# ssid = "gsog-iot"
-# password = "IOT_Projekt_BFK-S_2022"
-#ssid = "POCO"
-#password ="123456789"
-ssid = "Jaron"
-password = "12345678"
+ssid = "gsog-iot"
+password = "IOT_Projekt_BFK-S_2022"
 
 wifiConnect(ssid, password)
 
