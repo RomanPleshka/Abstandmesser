@@ -5,7 +5,7 @@ import time
 while (True):
     try:
         # Connection zu IP von ESP
-        connection = http.client.HTTPConnection('IP ADRESSE', 80)
+        connection = http.client.HTTPConnection('10.1.230.185', 80)
         connection.request('GET', '/distance.json')
 
         response = connection.getresponse()
